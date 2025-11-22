@@ -147,6 +147,34 @@
             animation: ripple-shine 5s ease-in infinite; /* Changed to ease-in */
       }
 
+      /* --- Ghost Stroke Text Layer --- */
+        #company-name::before {
+            /* 1. Grab the text from the HTML attribute */
+            content: attr(data-text);
+            
+            /* 2. Position it directly behind the main text */
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind the main text */
+            filter: drop-shadow(0 0 10px rgba(251, 146, 60, 0.8));
+            
+            /* 3. Make it stroke-only (No body) */
+            color: transparent;
+            -webkit-text-stroke: 2px #d8d8d8; /* Thin, subtle white outline */
+            
+            /* 4. Remove the gradient background so it's just the stroke */
+            background: none;
+            -webkit-background-clip: border-box;
+            background-clip: border-box;
+            animation: none; /* Don't animate the stroke (optional) */
+
+            /* 5. (Optional) Move it slightly for a 3D/Retro depth effect */
+            transform: translate(-4px, 4px);
+        }
+
 
       /* --- MODIFIED: Keyframes for a "Pulse, Fade, Pause" loop ---
         - 0% to 60%: Animates from small to big ("small to big")
@@ -160,10 +188,10 @@
           }
           70% {
               /* Expand the ripple over 80% of the animation time */
-              background-size: 100% auto, 100% auto; 
+              background-size: 200% auto, 100% auto; 
           }
           /* This is the "fade away" and "pause" */
-          80.01% {
+          70.01% {
               /* Instantly reset to 0% */
               background-size: 0% auto, 100% auto;
           }
