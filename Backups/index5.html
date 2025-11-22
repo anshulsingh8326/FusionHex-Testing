@@ -109,84 +109,71 @@
 
         /* --- MODIFIED: Shine effect applied to the H1 (containing the glowing span) --- */
        #company-name {
-        font-family: 'Barlow', sans-serif;
-        position: relative;
-        z-index: 10; /* Sit above the canvas/blur */
-        letter-spacing: 0.04em;
-        
-        /* Make the text SOLID silver. Do not use 'transparent' here. */
-        color: #cfcecc; 
-        
-        /* Optional: A very subtle text shadow to lift it off the stroke */
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
+            /* MODIFIED: Removed 'opacity' from the transition */
+            font-family: 'Barlow', sans-serif; /* <-- ADD THIS LINE */
+            transition: transform 0.1s linear;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.04em;
+
+            /* --- SHINE STYLES (RIPPLE RING) --- */
+    
+            /* 1. We stack two backgrounds. */
+            background: 
+           /* BG 1: The "Ring" (Transparent center, white ring, fades to transparent) */
+           radial-gradient(circle at center,
+             transparent 20%, /* Center is transparent */
+             #ffffff 70%,     /* Shine color */
+             transparent 80%  /* Fades out */
+           ),
+           /* BG 2: The Base Text Color (Always visible) */
+           linear-gradient(to right, #c1c5cb 0%, #bfc3c9 100%);
+     
+            /* 2. Set initial sizes. */
+            background-size: 0% auto, 100% auto;
+     
+            /* 3. Center the ripple. */
+             background-position: center, 0 0;
+     
+             /* 4. We only want the ripple to repeat. */
+             background-repeat: no-repeat;
+
+            /* 5. The clip applies to ALL backgrounds. */
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+     
+            /* 6. Apply the new animation. 4s duration and ease-in-out for smoothness */
+            animation: ripple-shine 5s ease-in infinite; /* Changed to ease-in */
+      }
 
       /* --- Ghost Stroke Text Layer --- */
         #company-name::before {
-        content: attr(data-text);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        
-        z-index: -1; /* Behind the Main Text */
-        
-        /* The Glow/Shadow */
-        filter: drop-shadow(0 0 10px rgba(251, 146, 60, 0.8));
-        
-        /* The Stroke */
-        color: transparent;
-        -webkit-text-stroke: 2px #d8d8d8;
-        scale: (1.1);
-        /* 3D Offset */
-        transform: translate(0px, 6px);
-        
-        /* Ensure no background interference */
-        background: none;
-        pointer-events: none;
-    }
+            /* 1. Grab the text from the HTML attribute */
+            content: attr(data-text);
+            
+            /* 2. Position it directly behind the main text */
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind the main text */
+            filter: drop-shadow(0 0 10px rgba(251, 146, 60, 0.8));
+            
+            /* 3. Make it stroke-only (No body) */
+            color: transparent;
+            -webkit-text-stroke: 2px #d8d8d8; /* Thin, subtle white outline */
+            
+            /* 4. Remove the gradient background so it's just the stroke */
+            background: none;
+            -webkit-background-clip: border-box;
+            background-clip: border-box;
+            animation: none; /* Don't animate the stroke (optional) */
 
-
-    /* --- 3. The Top Layer (Ripple Shine Overlay) --- */
-    /* Sits ON TOP of the solid text to provide the animation */
-    #company-name::after {
-        content: attr(data-text);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        
-        z-index: 20; /* Above the Main Text */
-        
-        /* --- SHINE STYLES --- */
-        background: radial-gradient(circle at center,
-            transparent 20%, 
-            #ffffff 70%,    /* The Shine Color */
-            transparent 80% 
-        );
-        
-        background-size: 0% auto;
-        background-position: center;
-        background-repeat: no-repeat;
-        
-        /* Clip the white gradient to the text shape */
-        -webkit-background-clip: text;
-        background-clip: text;
-        
-        /* The text itself must be transparent so only the white shine background shows */
-        color: transparent; 
-        
-        /* The Animation */
-        animation: ripple-shine 6s ease-in infinite;
-        
-        /* Important: Let clicks pass through to the main text */
-        pointer-events: none;
-        
-        /* Optional: Mix-blend-mode can make the shine look more "integrated" */
-        mix-blend-mode: overlay; 
-    }
+            /* 5. (Optional) Move it slightly for a 3D/Retro depth effect */
+            transform: translate(-4px, 4px);
+        }
 
 
       /* --- MODIFIED: Keyframes for a "Pulse, Fade, Pause" loop ---
@@ -201,7 +188,7 @@
           }
           70% {
               /* Expand the ripple over 80% of the animation time */
-              background-size: 250% auto, 100% auto; 
+              background-size: 200% auto, 100% auto; 
           }
           /* This is the "fade away" and "pause" */
           70.01% {
@@ -210,7 +197,7 @@
           }
           100% {
               /* Hold at 0% for the rest of the duration */
-              background-size: 0% auto, 0% auto; 
+              background-size: 0% auto, 100% auto; 
           }
       }
         
