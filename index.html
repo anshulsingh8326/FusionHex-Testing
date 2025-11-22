@@ -159,16 +159,16 @@
                 background-size: 0% auto, 100% auto;
             }
 
-            80% {
-                background-size: 250% auto, 100% auto;
+            70% {
+                background-size: 300% auto, 100% auto;
             }
 
-            80.01% {
+            70.01% {
                 background-size: 0% auto, 100% auto;
             }
 
             100% {
-                background-size: 0% auto, 0% auto;
+                background-size: 0% auto, 100% auto;
             }
         }
 
@@ -466,14 +466,14 @@
                 document.body.style.overflow = '';
             }
 
-            if (menuBtn) menuBtn.addEventListener('click', openSidebar);
-            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
-            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+            menuBtn.addEventListener('click', openSidebar);
+            closeBtn.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', closeSidebar);
             });
 
-            // --- Ripple Button Effect ---
+            // --- NEW: Ripple Button Effect ---
             function createRipple(event) {
                 const button = event.currentTarget;
                 const circle = document.createElement("span");
@@ -498,25 +498,21 @@
                 button.addEventListener('mousedown', createRipple);
             });
 
-            // --- SCROLL & SCALE ANIMATION ---
+            // --- Scroll Effects ---
             const heroContent = document.getElementById('hero-content-fixed');
+
+            // UPDATED: Target the WRAPPER, not just the H1
             const heroLogoGroup = document.getElementById('logo-wrapper');
-            const echo1 = document.querySelector('.echo-1'); // Select Echo 1
-            const echo2 = document.querySelector('.echo-2'); // Select Echo 2
+
             const heroSubtitle = document.getElementById('hero-subtitle');
             const heroSection = document.getElementById('hero');
 
-            // Config
             const scaleSpeed = 1.0;
             const fadeSpeed = 0.5;
             const subtitleFadeSpeed = 2.5;
             const minScale = 0.0;
 
             let titleTravelDistanceY = 0;
-
-            // Initial Scale Values for Echoes (Must match your CSS)
-            const echo1BaseScale = 1.03;
-            const echo2BaseScale = 1.06;
 
             function calculateTravel() {
                 if (heroContent) {
@@ -527,12 +523,11 @@
                     heroContent.style.opacity = 1;
                 }
 
-                if (heroLogoGroup) {
-                    const h1Rect = heroLogoGroup.getBoundingClientRect();
-                    const h1_initial_center_y = h1Rect.top + (h1Rect.height / 2);
-                    const target_y = window.innerHeight * 0.5;
-                    titleTravelDistanceY = target_y - h1_initial_center_y;
-                }
+                // UPDATED: Measure the WRAPPER position
+                const h1Rect = heroLogoGroup.getBoundingClientRect();
+                const h1_initial_center_y = h1Rect.top + (h1Rect.height / 2);
+                const target_y = window.innerHeight * 0.5;
+                titleTravelDistanceY = target_y - h1_initial_center_y;
             }
 
             setTimeout(calculateTravel, 100);
@@ -541,46 +536,18 @@
             function handleScroll() {
                 const scrollY = window.scrollY;
                 const heroHeight = heroSection.offsetHeight;
-
-                // Progress: 0 to 1
                 const scrollProgress = Math.min(1, scrollY / (heroHeight * 0.8));
-
-                // 1. Wrapper Scale (Shrinks the whole logo)
-                const wrapperScale = Math.max(minScale, 1 - (scrollProgress * scaleSpeed));
-
-                // 2. Opacity calculations
+                const scale = Math.max(minScale, 1 - (scrollProgress * scaleSpeed));
                 const titleOpacity = Math.max(0, 1 - (scrollProgress * fadeSpeed));
                 const subtitleOpacity = Math.max(0, 1 - (scrollProgress * subtitleFadeSpeed));
-
-                // 3. Travel Distance
                 const titleTranslateY = scrollProgress * titleTravelDistanceY;
 
-                // 4. Dynamic Echo Scaling (Collapsing effect)
-                // As progress goes 0 -> 1, factor goes 1 -> 0
-                const inverseProgress = 1 - scrollProgress;
-
-                // Calculate new scale: 1.0 + (ExtraPart * inverseProgress)
-                // This ensures it starts at 1.03/1.06 and ends cleanly at 1.0
-                const newEcho1Scale = 1 + ((echo1BaseScale - 1) * inverseProgress);
-                const newEcho2Scale = 1 + ((echo2BaseScale - 1) * inverseProgress);
-
-                // --- APPLY TRANSFORMS ---
-
-                // Animate Wrapper (Position & Overall Size)
+                // UPDATED: Animate the WRAPPER
                 if (heroLogoGroup) {
                     heroLogoGroup.style.opacity = titleOpacity;
-                    heroLogoGroup.style.transform = `translateY(${titleTranslateY}px) scale(${wrapperScale})`;
+                    heroLogoGroup.style.transform = `translateY(${titleTranslateY}px) scale(${scale})`;
                 }
 
-                // Animate Echoes (Collapse into main text)
-                if (echo1) {
-                    echo1.style.transform = `scale(${newEcho1Scale})`;
-                }
-                if (echo2) {
-                    echo2.style.transform = `scale(${newEcho2Scale})`;
-                }
-
-                // Animate Subtitle
                 if (heroSubtitle) {
                     heroSubtitle.style.opacity = subtitleOpacity;
                 }
@@ -589,7 +556,7 @@
             handleScroll();
 
 
-            // --- HERO HEXAGON CANVAS ANIMATION ---
+            // --- Hero Canvas Animation (Hexagons) ---
             const canvas = document.getElementById('hero-canvas');
             const ctx = canvas.getContext('2d');
             let hexagons = [];
