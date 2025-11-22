@@ -10,65 +10,46 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Nunito:wght@900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Barlow:wght@900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Nunito:wght@900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Barlow:wght@900&display=swap"
+        rel="stylesheet">
+
     <style>
         /* Custom styles for the app */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #1a1716;
-            /* OLD: #111827 (bg-gray-900) */
             color: #f3f4f6;
-            /* text-gray-100 */
             overflow-x: hidden;
         }
 
-        /* --- NEW: Hero Blur Overlay --- */
+        /* --- Hero Blur Overlay --- */
         #hero-blur-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            
-            /* Apply the blur - adjust 8px as needed */
             backdrop-filter: blur(0px);
             -webkit-backdrop-filter: blur(0px);
-            
-            /* * Stack it:
-             * - Above the canvas (z-index: 0)
-             * - Below the hero content (z-index: 10)
-             * - Below the header (z-index: 50)
-            */
             background-color: rgba(48, 42, 39, 0.1);
-            z-index: 5; 
+            z-index: 5;
         }
 
-        /* --- NEW: Noise/Grain Layer (Larger Particles) --- */
-#hero-blur-overlay::before {
-    content: "";
-    position: absolute;
-    inset: 0; 
-
-    /* I changed 'baseFrequency' to 0.60 in the URL below.
-       This creates "coarser" noise with larger gaps between particles.
-    */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.60' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.3'/%3E%3C/svg%3E");
-    
-    /* I increased this from 100px to 200px.
-       This "zooms in" on the noise, making the individual grains look 2x bigger.
-    */
-    background-size: 200px 200px; 
-
-    /* Now you can keep opacity low, but the grains will still be visible 
-       because they are physically larger.
-    */
-    opacity: 0.0; 
-
-    z-index: 6; 
-    pointer-events: none; 
-}
+        /* --- Noise/Grain Layer --- */
+        #hero-blur-overlay::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.60' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.3'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            opacity: 0.0;
+            z-index: 6;
+            pointer-events: none;
+        }
 
         /* Hero canvas for background animation */
         #hero-canvas {
@@ -78,7 +59,6 @@
             width: 100%;
             height: 100%;
             z-index: 0;
-            /* Behind all content */
         }
 
         /* Ensure content sections scroll OVER the canvas */
@@ -86,10 +66,9 @@
             position: relative;
             z-index: 10;
             background-color: #1a1716;
-            /* OLD: #111827 (bg-gray-900) */
         }
 
-        /* Frosted glass effect for navbar (Tailwind's backdrop-blur) */
+        /* Frosted glass effect for navbar */
         .frosted-glass {
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
@@ -97,123 +76,102 @@
             border: 1.5px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* --- MODIFIED: Wrapper for the glowing effect --- */
-        #company-name-glow {
-            display: inline-block; /* Essential for text-shadow to work well on inline elements */
+        /* --- FIXED FUSIONHEX LOGO STYLES --- */
+
+        /* 1. Main Text Styling */
+        #company-name {
+            font-family: 'Barlow', sans-serif;
+            color: #cfcecc;
+            /* Metal */
             position: relative;
-            /* Small, subtle orange glow */
-            text-shadow: 0 0 5px rgba(255, 165, 0, 0.6),
-                         0 0 10px rgba(255, 165, 0, 0.4);
-            color: #fff; /* Base color for the glow text */
+            z-index: 20;
+            /* Top of stack */
+
+            /* Ensure font size inherits from wrapper for responsive consistency */
+            font-size: inherit;
+            line-height: inherit;
+
+            /* Shadow to separate metal text from the orange lines */
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.9));
         }
 
-        /* --- MODIFIED: Shine effect applied to the H1 (containing the glowing span) --- */
-       #company-name {
-        font-family: 'Barlow', sans-serif;
-        position: relative;
-        z-index: 10; /* Sit above the canvas/blur */
-        letter-spacing: 0.04em;
-        
-        /* Make the text SOLID silver. Do not use 'transparent' here. */
-        color: #cfcecc; 
-        
-        /* Optional: A very subtle text shadow to lift it off the stroke */
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
+        /* 2. The White Shine Animation (::after) */
+        #company-name::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            /* Above text */
 
-      /* --- Ghost Stroke Text Layer --- */
-        #company-name::before {
-        content: attr(data-text);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        
-        z-index: -1; /* Behind the Main Text */
-        
-        /* The Glow/Shadow */
-        filter: drop-shadow(0 0 10px rgba(251, 146, 60, 0.8));
-        
-        /* The Stroke */
-        color: transparent;
-        -webkit-text-stroke: 2px #d8d8d8;
-        scale: (1.1);
-        /* 3D Offset */
-        transform: translate(0px, 6px);
-        
-        /* Ensure no background interference */
-        background: none;
-        pointer-events: none;
-    }
+            background: radial-gradient(circle at center, transparent 20%, #ffffff 80%, transparent 90%);
+            background-size: 0% auto;
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
 
+            animation: ripple-shine 6s ease-in infinite;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
 
-    /* --- 3. The Top Layer (Ripple Shine Overlay) --- */
-    /* Sits ON TOP of the solid text to provide the animation */
-    #company-name::after {
-        content: attr(data-text);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        
-        z-index: 20; /* Above the Main Text */
-        
-        /* --- SHINE STYLES --- */
-        background: radial-gradient(circle at center,
-            transparent 20%, 
-            #ffffff 70%,    /* The Shine Color */
-            transparent 80% 
-        );
-        
-        background-size: 0% auto;
-        background-position: center;
-        background-repeat: no-repeat;
-        
-        /* Clip the white gradient to the text shape */
-        -webkit-background-clip: text;
-        background-clip: text;
-        
-        /* The text itself must be transparent so only the white shine background shows */
-        color: transparent; 
-        
-        /* The Animation */
-        animation: ripple-shine 6s ease-in infinite;
-        
-        /* Important: Let clicks pass through to the main text */
-        pointer-events: none;
-        
-        /* Optional: Mix-blend-mode can make the shine look more "integrated" */
-        mix-blend-mode: overlay; 
-    }
+        /* 3. Shared Echo Styles (The Background Lines) */
+        .echo-text {
+            font-family: 'Barlow', sans-serif;
+            /* Important: Inherit size so they match the H1 perfectly on all screens */
+            font-size: inherit;
+            line-height: inherit;
+
+            width: 100%;
+            text-align: center;
+            color: transparent;
+            background: none;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Echo 1: Close, Bright Orange */
+        .echo-1 {
+            z-index: 10;
+            /* Behind Main */
+            transform: scale(1.03);
+            -webkit-text-stroke: 2px rgba(251, 146, 60, 0.9);
+            filter: drop-shadow(0 0 2px rgba(251, 146, 60, 0.6));
+        }
+
+        /* Echo 2: Far, Faded Orange */
+        .echo-2 {
+            z-index: 0;
+            /* Behind Echo 1 */
+            transform: scale(1.06);
+            -webkit-text-stroke: 1px rgba(251, 146, 60, 0.4);
+            filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.2));
+        }
 
 
-      /* --- MODIFIED: Keyframes for a "Pulse, Fade, Pause" loop ---
-        - 0% to 60%: Animates from small to big ("small to big")
-        - 60.01%: Instantly resets to 0% ("fades away")
-        - 100%: Stays at 0% ("pause")
-      */
-      @keyframes ripple-shine {
-          10% {
-              /* Start: ripple is small */
-              background-size: 0% auto, 100% auto; 
-          }
-          70% {
-              /* Expand the ripple over 80% of the animation time */
-              background-size: 250% auto, 100% auto; 
-          }
-          /* This is the "fade away" and "pause" */
-          70.01% {
-              /* Instantly reset to 0% */
-              background-size: 0% auto, 100% auto;
-          }
-          100% {
-              /* Hold at 0% for the rest of the duration */
-              background-size: 0% auto, 0% auto; 
-          }
-      }
-        
+        /* Shine Animation Keyframes */
+        @keyframes ripple-shine {
+            10% {
+                background-size: 0% auto, 100% auto;
+            }
+
+            80% {
+                background-size: 250% auto, 100% auto;
+            }
+
+            80.01% {
+                background-size: 0% auto, 100% auto;
+            }
+
+            100% {
+                background-size: 0% auto, 0% auto;
+            }
+        }
+
         /* Gradient Blur at the bottom of the hero section */
         #hero-gradient-blur {
             position: absolute;
@@ -221,14 +179,10 @@
             left: 0;
             width: 100%;
             height: 10%;
-            /* Adjust as needed for 5-10% */
             background: linear-gradient(to top, #1a1716 10%, transparent 100%);
             z-index: 10;
-            /* Above canvas, below content */
             pointer-events: none;
-            /* Allows clicks to pass through */
         }
-        
 
         /* Scroll Down Arrow Animation */
         @keyframes bounce {
@@ -254,43 +208,32 @@
             animation: bounce 2s infinite;
         }
 
-        /* --- NEW: Custom color overrides --- */
+        /* Custom color overrides */
         #services,
         #contact {
             background-color: #2a2726;
-            /* Lighter variant of #1a1716 */
         }
 
         .service-card {
             background-color: #1a1716;
-            /* Base dark */
         }
 
         #sidebar {
             background-color: rgba(26, 23, 22, 0.8);
-            /* Base dark #1a1716 + alpha */
         }
 
-        /* --- End new styles --- */
-
-        /* --- NEW: Button & Ripple Styles --- */
+        /* Button & Ripple Styles */
         .btn-primary {
             position: relative;
             overflow: hidden;
-            /* Horizontal gradient */
             background-image: linear-gradient(to right, #f97316 0%, #fb923c 100%);
-            /* orange-600 to orange-500 */
             transition: all 0.3s ease-out;
             z-index: 1;
-            /* Keep content above potential pseudo-elements */
             display: inline-block;
-            /* Added for proper behavior of <a> tag */
         }
 
         .btn-primary:hover {
-            /* Brighter gradient on hover */
             background-image: linear-gradient(to right, #fb923c 0%, #f97316 100%);
-            /* orange-500 to pink-300 */
             box-shadow: 0 4px 15px rgba(251, 146, 60, 0.4);
             transform: translateY(-3px);
         }
@@ -302,7 +245,6 @@
             transform: scale(0);
             animation: ripple 600ms linear;
             pointer-events: none;
-            /* Make sure it doesn't block clicks */
         }
 
         @keyframes ripple {
@@ -314,33 +256,33 @@
 
         /* FIX: Mobile Landscape Tweaks */
         @media (max-height: 520px) and (orientation: landscape) {
-            #company-name {
-                font-size: 6rem !important; /* Smaller text on short screens */
-                margin-bottom: 1.5rem !important; /* Less gap below text */
+
+            /* We target the WRAPPER ID now, not just company-name */
+            #logo-wrapper {
+                font-size: 6rem !important;
+                margin-bottom: 1.5rem !important;
             }
+
             #hero-content-fixed {
-                top: 45% !important; /* Push down slightly to clear navbar */
+                top: 45% !important;
             }
+
             #hero-subtitle {
-                display: none; /* Hide subtitle on landscape to save space if needed, or keep it (block; to keep it, none to remove it) */
+                display: none;
             }
         }
-
-        /* --- End new styles --- */
     </style>
 </head>
 
 <body class="antialiased">
 
     <canvas id="hero-canvas"></canvas>
-
     <div id="hero-blur-overlay"></div>
 
     <header class="fixed top-0 left-0 right-0 z-50 p-4">
         <nav class="max-w-6xl mx-auto flex justify-between items-center p-3 px-6 rounded-2xl frosted-glass">
-            
             <a href="#" class="flex items-center text-2xl font-bold text-white tracking-tight">
-            <img src="images/menuIcon.png" alt="⬡" class="h-7 w-auto mr-2">  <span>FusionHex</span>
+                <img src="images/menuIcon.png" alt="⬡" class="h-7 w-auto mr-2"> <span>FusionHex</span>
             </a>
 
             <div class="hidden md:flex items-center space-x-8">
@@ -389,20 +331,31 @@
     <main>
         <section id="hero" class="h-[100svh] flex items-center justify-center text-center relative z-10 p-4">
             <div id="hero-content-fixed" class="w-full text-center">
-        
-                <h1 id="company-name" data-text="FusionHex"
-                    class="text-6xl sm:text-8xl md:text-[12rem] md:leading-none font-black mb-16">
-                    FusionHex
-                </h1>
-        
+
+                <div id="logo-wrapper" class="grid grid-cols-1 items-center justify-items-center mb-16 relative z-20
+                            text-6xl sm:text-8xl md:text-[12rem] md:leading-none font-black">
+
+                    <span class="echo-text echo-2 col-start-1 row-start-1" aria-hidden="true">
+                        FusionHex
+                    </span>
+
+                    <span class="echo-text echo-1 col-start-1 row-start-1" aria-hidden="true">
+                        FusionHex
+                    </span>
+
+                    <h1 id="company-name" data-text="FusionHex" class="col-start-1 row-start-1">
+                        FusionHex
+                    </h1>
+                </div>
+
                 <p id="hero-subtitle" class="text-xl md:text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">
                     Crafting the future of digital interaction through innovative games, apps, and tools.
                 </p>
-        
+
             </div>
-        
+
             <div id="hero-gradient-blur"></div>
-        
+
             <div class="absolute bottom-10 md:bottom-10 left-1/2 -translate-x-1/2 z-20">
                 <a href="#about" aria-label="Scroll down to About section">
                     <svg class="w-10 h-10 text-orange-400 scroll-down-arrow" viewBox="0 0 24 24" fill="none"
@@ -436,7 +389,6 @@
             <div class="max-w-6xl mx-auto">
                 <h2 class="text-4xl font-bold text-center mb-12 text-white">What We Build</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
                     <div class="service-card p-8 rounded-2xl border border-gray-700 shadow-lg">
                         <h3 class="text-2xl font-bold mb-4 text-orange-400">Game Development</h3>
                         <p class="text-gray-300">
@@ -444,7 +396,6 @@
                             and design to development and deployment.
                         </p>
                     </div>
-
                     <div class="service-card p-8 rounded-2xl border border-gray-700 shadow-lg">
                         <h3 class="text-2xl font-bold mb-4 text-orange-400">App Development</h3>
                         <p class="text-gray-300">
@@ -452,7 +403,6 @@
                             delight users.
                         </p>
                     </div>
-
                     <div class="service-card p-8 rounded-2xl border border-gray-700 shadow-lg">
                         <h3 class="text-2xl font-bold mb-4 text-orange-400">Developer Tools</h3>
                         <p class="text-gray-300">
@@ -523,73 +473,48 @@
                 link.addEventListener('click', closeSidebar);
             });
 
-
             // --- NEW: Ripple Button Effect ---
             function createRipple(event) {
                 const button = event.currentTarget;
-
-                // Create ripple span
                 const circle = document.createElement("span");
                 const diameter = Math.max(button.clientWidth, button.clientHeight);
                 const radius = diameter / 2;
-
-                // Get click position relative to button
                 const rect = button.getBoundingClientRect();
                 const rippleX = event.clientX - rect.left - radius;
                 const rippleY = event.clientY - rect.top - radius;
-
                 circle.style.width = circle.style.height = `${diameter}px`;
                 circle.style.left = `${rippleX}px`;
                 circle.style.top = `${rippleY}px`;
                 circle.classList.add("ripple");
-
-                // Remove old ripple if one exists
                 const oldRipple = button.querySelector(".ripple");
-                if (oldRipple) {
-                    oldRipple.remove();
-                }
-
-                // Add new ripple
+                if (oldRipple) oldRipple.remove();
                 button.appendChild(circle);
-
-                // Clean up the ripple element after animation
                 setTimeout(() => {
-                    if (circle.parentElement) {
-                        circle.remove();
-                    }
+                    if (circle.parentElement) circle.remove();
                 }, 600);
             }
-
             const rippleButtons = document.querySelectorAll('.btn-primary');
             rippleButtons.forEach(button => {
-                // We use 'mousedown' for a more immediate feel, but 'click' also works
                 button.addEventListener('mousedown', createRipple);
             });
-            // --- END: Ripple Button Effect ---
-
 
             // --- Scroll Effects ---
             const heroContent = document.getElementById('hero-content-fixed');
-            const heroName = document.getElementById('company-name');
+
+            // UPDATED: Target the WRAPPER, not just the H1
+            const heroLogoGroup = document.getElementById('logo-wrapper');
+
             const heroSubtitle = document.getElementById('hero-subtitle');
             const heroSection = document.getElementById('hero');
 
-            // --- SCROLL TWEAKS ---
-            const scaleSpeed = 1.0; // How fast the title scales down
-            const fadeSpeed = 0.5; // How fast the title (FusionHex) fades
-            const subtitleFadeSpeed = 2.5; // How fast the subtitle fades (2.5x faster)
-            const minScale = 0.0; // Scale down to 0%
-            // --- END SCROLL TWEAKS ---
+            const scaleSpeed = 1.0;
+            const fadeSpeed = 0.5;
+            const subtitleFadeSpeed = 2.5;
+            const minScale = 0.0;
 
-            // We need to store the calculated travel distance
             let titleTravelDistanceY = 0;
 
-            /**
-             * This function measures the h1's exact starting position and
-             * calculates the distance needed to travel to the screen's center (50% vh).
-             */
             function calculateTravel() {
-                // 1. Ensure all initial styles are applied *before* measuring
                 if (heroContent) {
                     heroContent.style.position = 'fixed';
                     heroContent.style.top = '40%';
@@ -598,47 +523,31 @@
                     heroContent.style.opacity = 1;
                 }
 
-                // 2. Find the h1's starting Y-center position on the screen
-                const h1Rect = heroName.getBoundingClientRect();
+                // UPDATED: Measure the WRAPPER position
+                const h1Rect = heroLogoGroup.getBoundingClientRect();
                 const h1_initial_center_y = h1Rect.top + (h1Rect.height / 2);
-
-                // 3. Define the target Y-center (50% of the screen)
                 const target_y = window.innerHeight * 0.5;
-
-                // 4. The distance is the difference
                 titleTravelDistanceY = target_y - h1_initial_center_y;
             }
 
-            // Calculate on load.
-            // We use a small timeout to ensure fonts and layout are settled before we measure.
             setTimeout(calculateTravel, 100);
-
-            // Re-calculate on resize
             window.addEventListener('resize', calculateTravel);
-
 
             function handleScroll() {
                 const scrollY = window.scrollY;
                 const heroHeight = heroSection.offsetHeight;
-
-                // Finish animation by 80% scroll of hero section
                 const scrollProgress = Math.min(1, scrollY / (heroHeight * 0.8));
-
                 const scale = Math.max(minScale, 1 - (scrollProgress * scaleSpeed));
                 const titleOpacity = Math.max(0, 1 - (scrollProgress * fadeSpeed));
                 const subtitleOpacity = Math.max(0, 1 - (scrollProgress * subtitleFadeSpeed));
-
-                // 5. Moves down by the dynamically calculated distance
                 const titleTranslateY = scrollProgress * titleTravelDistanceY;
 
-                // 6. Animate the Title (h1)
-                if (heroName) {
-                    heroName.style.opacity = titleOpacity;
-                    // Apply BOTH transforms (move and scale) to the h1 itself
-                    heroName.style.transform = `translateY(${titleTranslateY}px) scale(${scale})`;
+                // UPDATED: Animate the WRAPPER
+                if (heroLogoGroup) {
+                    heroLogoGroup.style.opacity = titleOpacity;
+                    heroLogoGroup.style.transform = `translateY(${titleTranslateY}px) scale(${scale})`;
                 }
 
-                // 7. Animate the Subtitle (p)
                 if (heroSubtitle) {
                     heroSubtitle.style.opacity = subtitleOpacity;
                 }
@@ -647,70 +556,35 @@
             handleScroll();
 
 
-            // --- Hero Canvas Animation ---
+            // --- Hero Canvas Animation (Hexagons) ---
             const canvas = document.getElementById('hero-canvas');
             const ctx = canvas.getContext('2d');
-
-            // --- State variables for time-based animation ---
             let hexagons = [];
-            let lastTime = 0; // Stores the timestamp of the last frame
-            let timeToNextSpawn = 0; // Tracks when to spawn the next hexagon
+            let lastTime = 0;
+            let timeToNextSpawn = 0;
 
+            const spawnInterval = 900;
+            const warmUpTime = 20000;
+            const baseSize = Math.max(window.innerWidth, window.innerHeight) * 0.6;
+            const hexagonLifespan = 20000;
+            const colorTransitionStart = 0.25;
+            const colorTransitionDuration = 0.5;
+            const cornerRadiusFraction = 0.03;
 
-            // --- ANIMATION TWEAKS Hexagon ---
-            const spawnInterval = 900; // (ms) How often a new hexagon appears.
-            const warmUpTime = 20000; // (ms) Simulate on load to prevent "cold start". (20s)
-            const baseSize = Math.max(window.innerWidth, window.innerHeight) * 0.6; // Max size hexagon grows to.
-            const hexagonLifespan = 20000; // (ms) Total lifespan of a hexagon. (20s)
-
-            // --- COLOR TWEAKS ---
-            const colorTransitionStart = 0.25; // (0.0-1.0) When color transition starts (25% of life).
-            const colorTransitionDuration = 0.5; // (0.0-1.0) How long the transition takes (50% of life).
-
-            // --- Hexagon Corner Radius ---
-            const cornerRadiusFraction = 0.03; // (0.0-1.0) How rounded corners are. 0.0 = sharp.
-            // --- END ANIMATION TWEAKS ---
-
-
-            // Hexagon class
             class Hexagon {
                 constructor(x, y, initialSize) {
-                    this.x = x;
-                    this.y = y;
-                    this.initialSize = initialSize;
-                    this.size = 0;
-
-                    this.lifespan = hexagonLifespan;
-                    this.age = 0; // Age in milliseconds
-
-                    this.progress = 0; // Time-based progress (0.0 to 1.0)
-                    this.alpha = 0; // Final transparency
+                    this.x = x; this.y = y; this.initialSize = initialSize; this.size = 0;
+                    this.lifespan = hexagonLifespan; this.age = 0; this.progress = 0; this.alpha = 0;
                 }
-
-                /**
-                 * Updates the hexagon's state based on elapsed time.
-                 * @param {number} deltaTime - The time elapsed (in ms) since the last frame.
-                 */
                 update(deltaTime) {
                     this.age += deltaTime;
-                    this.progress = this.age / this.lifespan; // Linear time progress
-
-                    if (this.progress > 1) {
-                        this.progress = 1;
-                    }
-
-                    // How much the hexagon speeds up. 1.0 = linear. > 1.0 = eases in (starts slow, ends fast).
+                    this.progress = this.age / this.lifespan;
+                    if (this.progress > 1) this.progress = 1;
                     const accelerationFactor = 1.5;
-
-                    // Calculate size based on an easing function for acceleration
                     const easedProgress = Math.pow(this.progress, accelerationFactor);
                     this.size = easedProgress * this.initialSize;
-
-                    // --- FADE TWEAKS ---
-                    const fadeInDuration = 0.2; // (0.0-1.0) Fades in for first 20% of its life
-                    const fadeOutStart = 0.80; // (0.0-1.0) Starts fading out at 80% of its life
-                    // --- END FADE TWEAKS ---
-
+                    const fadeInDuration = 0.2;
+                    const fadeOutStart = 0.80;
                     if (this.progress < fadeInDuration) {
                         this.alpha = this.progress / fadeInDuration;
                     } else if (this.progress > fadeOutStart) {
@@ -719,13 +593,8 @@
                     } else {
                         this.alpha = 1;
                     }
-
                     this.alpha = Math.max(0, Math.min(1, this.alpha));
                 }
-
-                /**
-                 * MODIFIED draw() function with rounded corners
-                 */
                 draw() {
                     const vertices = [];
                     for (let i = 0; i < 6; i++) {
@@ -735,74 +604,42 @@
                             y: this.y + this.size * Math.sin(angle)
                         });
                     }
-
                     ctx.beginPath();
-
-                    // Calculate inset points for each vertex
                     const points = [];
                     for (let i = 0; i < 6; i++) {
                         const v_curr = vertices[i];
                         const v_prev = vertices[(i + 5) % 6];
                         const v_next = vertices[(i + 1) % 6];
-
-                        // Point on edge [prev -> curr]
                         const p_start = {
                             x: v_curr.x - (v_curr.x - v_prev.x) * cornerRadiusFraction,
                             y: v_curr.y - (v_curr.y - v_prev.y) * cornerRadiusFraction
                         };
-
-                        // Point on edge [curr -> next]
                         const p_next = {
                             x: v_curr.x + (v_next.x - v_curr.x) * cornerRadiusFraction,
                             y: v_curr.y + (v_next.y - v_curr.y) * cornerRadiusFraction
                         };
-
                         points.push({ start: p_start, corner: v_curr, next: p_next });
                     }
-
-                    // Start at the 'next' point of the *last* vertex
                     ctx.moveTo(points[5].next.x, points[5].next.y);
-
                     for (let i = 0; i < 6; i++) {
-                        // Line from previous curve's end to the start of this vertex's curve
                         ctx.lineTo(points[i].start.x, points[i].start.y);
-                        // Curve around the corner
                         ctx.quadraticCurveTo(points[i].corner.x, points[i].corner.y, points[i].next.x, points[i].next.y);
                     }
-                    // The path closes automatically by looping
-
-                    // --- COLOR TWEAKS ---
                     const colorProgress = Math.max(0, Math.min(1, (this.progress - colorTransitionStart) / colorTransitionDuration));
-                    const hue = 39 - (179 * colorProgress); // Orange -> Red -> Blue
+                    const hue = 39 - (179 * colorProgress);
                     const color = `hsla(${hue}, 100%, 60%, ${this.alpha})`;
-
                     ctx.strokeStyle = color;
                     ctx.lineWidth = 3;
                     ctx.shadowColor = color;
                     ctx.shadowBlur = 15;
-                    // --- END COLOR TWEAKS ---
-
                     ctx.stroke();
                 }
-
-                /**
-                 * Checks if the hexagon has exceeded its lifespan.
-                 * @returns {boolean}
-                 */
-                isDead() {
-                    return this.age >= this.lifespan;
-                }
+                isDead() { return this.age >= this.lifespan; }
             }
 
-            /**
-             * Spawns a new hexagon and fast-forwards its age if needed (for warm-up).
-             * @param {number} [ageOffset=0] - The starting age of the hexagon in ms.
-             */
             function spawnHexagon(ageOffset = 0) {
                 const hex = new Hexagon(canvas.width / 2, canvas.height / 2, baseSize);
-                if (ageOffset > 0) {
-                    hex.update(ageOffset); // Fast-forward
-                }
+                if (ageOffset > 0) hex.update(ageOffset);
                 hexagons.push(hex);
             }
 
@@ -812,66 +649,37 @@
             }
 
             function animate(timestamp) {
-                // --- 1. Calculate DeltaTime ---
                 let deltaTime;
-
                 if (lastTime === 0) {
-                    // This is the FIRST frame (page load)
-                    lastTime = timestamp;
-                    deltaTime = 0; // No time has passed yet
-
-                    // Set first spawn time to be in the past to trigger warm-up
+                    lastTime = timestamp; deltaTime = 0;
                     timeToNextSpawn = timestamp - warmUpTime;
                 } else {
-                    // This is a subsequent frame
                     deltaTime = timestamp - lastTime;
                     lastTime = timestamp;
                 }
-
-                // --- FIX FOR TAB UNFOCUS ---
-                // If more than 1s has passed (1000ms), treat it as a pause.
                 const pauseThreshold = 1000;
-
                 if (deltaTime > pauseThreshold) {
-                    // This was a long pause (tab unfocused).
-                    // 1. Discard the huge delta. Update physics by 0 this frame.
                     deltaTime = 0;
-
-                    // 2. Reschedule the NEXT spawn from "now" to prevent
-                    // a "catch-up" burst of hexagons.
                     timeToNextSpawn = timestamp;
                 }
-
-
-                // --- 2. Clear Canvas ---
-                ctx.fillStyle = '#1a1716'; // New dark base (OLD: #111827)
+                ctx.fillStyle = '#1a1716';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.shadowBlur = 0; // Reset shadow blur
-
-                // --- 3. Spawn New Hexagons ---
-                // This 'while' loop catches up on spawns during warm-up,
-                // but will only spawn ONE hexagon on tab resume.
+                ctx.shadowBlur = 0;
                 while (timestamp > timeToNextSpawn) {
-                    // Pass the ageOffset. On warm-up, this is large.
                     spawnHexagon(timestamp - timeToNextSpawn);
                     timeToNextSpawn += spawnInterval;
                 }
-
-                // --- 4. Update and Draw Existing Hexagons ---
-                // On the resume frame, deltaTime will be 0, so nothing "jumps".
                 hexagons = hexagons.filter(hex => {
                     hex.update(deltaTime);
                     hex.draw();
-                    return !hex.isDead(); // Keep if not dead
+                    return !hex.isDead();
                 });
-
-                // --- 5. Request Next Frame ---
                 requestAnimationFrame(animate);
             }
 
             window.addEventListener('resize', resizeCanvas);
             resizeCanvas();
-            requestAnimationFrame(animate); // Start animation
+            requestAnimationFrame(animate);
         });
     </script>
 </body>
