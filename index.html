@@ -271,7 +271,19 @@
             }
         }
 
-        
+        /* FIX: Mobile Landscape Tweaks */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #company-name {
+                font-size: 3.5rem !important; /* Smaller text on short screens */
+                margin-bottom: 1.5rem !important; /* Less gap below text */
+            }
+            #hero-content-fixed {
+                top: 60% !important; /* Push down slightly to clear navbar */
+            }
+            #hero-subtitle {
+                display: none; /* Hide subtitle on landscape to save space if needed, or keep it */
+            }
+        }
 
         /* --- End new styles --- */
     </style>
@@ -334,24 +346,23 @@
     </div>
 
     <main>
-        <section id="hero" class="h-screen flex items-center justify-center text-center relative z-10 p-4">
+        <section id="hero" class="h-[100svh] flex items-center justify-center text-center relative z-10 p-4">
             <div id="hero-content-fixed" class="w-full text-center">
-
-               <h1 id="company-name"
-                      data-text="FusionHex" 
-                      class="text-7xl sm:text-8xl md:text-[12rem] md:leading-none font-black mb-16">
-                      FusionHex
-               </h1>
-
+        
+                <h1 id="company-name" data-text="FusionHex"
+                    class="text-6xl sm:text-8xl md:text-[12rem] md:leading-none font-black mb-16">
+                    FusionHex
+                </h1>
+        
                 <p id="hero-subtitle" class="text-xl md:text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">
                     Crafting the future of digital interaction through innovative games, apps, and tools.
                 </p>
-
+        
             </div>
-
+        
             <div id="hero-gradient-blur"></div>
-
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
+        
+            <div class="absolute bottom-20 md:bottom-10 left-1/2 -translate-x-1/2 z-20">
                 <a href="#about" aria-label="Scroll down to About section">
                     <svg class="w-10 h-10 text-orange-400 scroll-down-arrow" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
